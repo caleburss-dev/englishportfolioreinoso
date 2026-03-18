@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Process Worksheet | T12425</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --border-light: #333;
+    --text: #e8e8e8;
+    --text-muted: #888;
+    --text-dim: #555;
+    --accent: #ffffff;
+    --accent2: #c8c8c8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-id {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .nav-pages {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .page-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: transparent;
+    font-family: 'DM Mono', monospace;
+  }
+  .page-dot.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+  .page-dot:hover:not(.active) {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  .nav-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* ── PAGES ── */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 80px;
+    animation: fadeIn 0.4s ease;
+  }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HERO HEADER ── */
+  .hero {
+    padding: 60px 60px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .hero-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .hero-meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+  }
+
+  .meta-chip {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 0 60px 60px;
+  }
+
+  /* ── SECTION BLOCK ── */
+  .section-block {
+    margin-top: 48px;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .section-num {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    background: var(--surface2);
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .subsection {
+    margin-bottom: 30px;
+  }
+
+  .subsection-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── TABLES ── */
+  .tbl-wrap {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+    font-weight: 500;
+  }
+
+  td {
+    padding: 13px 16px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(255,255,255,0.015); }
+
+  /* ── INFO CARDS ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+
+  .info-card-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .info-card-value {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ── EVIDENCE LIST ── */
+  .evidence-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .evidence-list li {
+    font-size: 12.5px;
+    color: var(--text);
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    border-left: 2px solid var(--accent2);
+    line-height: 1.55;
+  }
+
+  .evidence-list li::before {
+    content: '— ';
+    color: var(--text-dim);
+  }
+
+  /* ── Q&A ── */
+  .qa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .qa-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .qa-question {
+    padding: 12px 16px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .qa-num {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 50%;
+    font-size: 9px;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 8px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .qa-answer {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    padding: 40px 60px 60px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 26px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent2);
+    transform: translateX(3px);
+  }
+
+  .nav-btn.prev {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+    margin-right: auto;
+  }
+
+  .nav-btn.prev:hover {
+    background: var(--surface2);
+    color: var(--text);
+    transform: translateX(-3px);
+  }
+
+  .arrow { font-size: 14px; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 36px 0;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-id">T12425</span>
+  <div class="nav-pages">
+    <button class="page-dot active" onclick="goTo(1)">1</button>
+    <button class="page-dot" onclick="goTo(2)">2</button>
+  </div>
+  <span class="nav-title">Reading Process Worksheet</span>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     PAGE 1 — ChatGPT in Essays
+═══════════════════════════════════════ -->
+<div class="page active" id="page-1">
+
+  <div class="hero">
+    <div class="hero-label">Worksheet 01 of 02</div>
+    <h1>ChatGPT in<br>Essay Writing</h1>
+    <div class="hero-sub">Reading Process Worksheet — Digital Portfolio</div>
+    <div class="hero-meta">
+      <span class="meta-chip">Pre-Reading</span>
+      <span class="meta-chip">Reading</span>
+      <span class="meta-chip">Post-Reading</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- I. PRE-READING -->
+    <div class="section-block">
+      <div class="section-label">
+        <span class="section-num">I</span>
+        <span class="section-title">Pre-Reading</span>
+        <div class="section-line"></div>
+        <span class="section-num">10 pts</span>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">A. Headings, Subheadings & Visuals</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr>
+              <th>Headings</th>
+              <th>Subheadings</th>
+              <th>Title / Description of Visuals</th>
+            </tr>
+            <tr>
+              <td>Introduction<br>Method<br>Results<br>Discussion</td>
+              <td>Implications for learning, grading, and trust in AI<br><br>Student perceptions before and after using ChatGPT<br><br>Survey design and participants</td>
+              <td>How students perceive ChatGPT in essay writing and its usefulness<br><br>Data summary of student respondents</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">B. KWL Chart</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>K — What I Know</th><th>W — What I Wonder</th><th>L — What I Learned</th></tr>
+            <tr>
+              <td>ChatGPT is widely known and used by students<br><br>People think using ChatGPT is cheating<br><br>It can help in writing essays</td>
+              <td>Does ChatGPT improve learning?<br><br>Does it really help in writing essays?</td>
+              <td>Students found it helpful for learning<br><br>ChatGPT doesn't always give reliable sources</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- II. READING -->
+    <div class="section-block">
+      <div class="section-label">
+        <span class="section-num">II</span>
+        <span class="section-title">Reading</span>
+        <div class="section-line"></div>
+        <span class="section-num">30 pts</span>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">A. Details & Inferences</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Details from the Text</th><th>Plausible Inferences</th></tr>
+            <tr>
+              <td>The study surveyed 34 engineering students before and after using ChatGPT. Students found it helpful but more challenging than expected. They prefer instructors involved in grading.</td>
+              <td>Students still value human judgment over AI — AI is better as a support tool than a replacement</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">B. Technical Terms</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Technical Term</th><th>Context Clue</th><th>Use in a Sentence</th></tr>
+            <tr>
+              <td>Artificial Intelligence</td>
+              <td>Technology that enables machines to perform tasks requiring human intelligence</td>
+              <td>AI can assist students but should not replace teachers.</td>
+            </tr>
+            <tr>
+              <td>1. Perception</td>
+              <td>Student opinions or views</td>
+              <td>Students' perception of AI affects how they use it.</td>
+            </tr>
+            <tr>
+              <td>2. Implication</td>
+              <td>Possible effect or consequence</td>
+              <td>The implication of using AI is improved efficiency.</td>
+            </tr>
+            <tr>
+              <td>3. Artificial Intelligence</td>
+              <td>Technology that enables machines to perform tasks requiring human intelligence</td>
+              <td>AI can assist students but should not replace teachers.</td>
+            </tr>
+            <tr>
+              <td>4. Grading</td>
+              <td>Evaluating student work</td>
+              <td>Teachers still prefer grading essays themselves.</td>
+            </tr>
+            <tr>
+              <td>5. Trust</td>
+              <td>Confidence in reliability</td>
+              <td>Students must verify AI outputs for trust.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">C. Key Information</div>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Topic</div>
+            <div class="info-card-value">The use of ChatGPT in college essay assignments</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Writer's Opinion</div>
+            <div class="info-card-value">ChatGPT can be helpful for learning but has limitations.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Evidence</div>
+            <div class="info-card-value">
+              <ul class="evidence-list" style="margin:0;gap:4px;">
+                <li style="border-left:none;padding:3px 0;background:none;border:none;font-size:12px;">Survey of 34 engineering students</li>
+                <li style="border-left:none;padding:3px 0;background:none;border:none;font-size:12px;">Students found it helpful but challenging</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- III. POST-READING -->
+    <div class="section-block">
+      <div class="section-label">
+        <span class="section-num">III</span>
+        <span class="section-title">Post-Reading</span>
+        <div class="section-line"></div>
+        <span class="section-num">10 pts</span>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">A. Rhetorical Analysis</div>
+        <div class="qa-list">
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">1</span>What credentials does the author have?</div>
+            <div class="qa-answer">Likely an academic professional with expertise in educational technology.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">2</span>What possible biases might the author have?</div>
+            <div class="qa-answer">May favor traditional teaching and be cautious about AI.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">3</span>What is the purpose of the text?</div>
+            <div class="qa-answer">To examine AI effectiveness in education using a study.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">4</span>What specific idea challenges or surprises you?</div>
+            <div class="qa-answer">AI was more challenging than expected — students struggled more than anticipated when using ChatGPT for essays.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">5</span>Is the style of writing suitable for the intended audience?</div>
+            <div class="qa-answer">Suitable academic style for students and educators.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="goTo(2)">
+      Next Worksheet <span class="arrow">→</span>
+    </button>
+  </div>
+
+</div><!-- /page-1 -->
+
+
+<!-- ═══════════════════════════════════════
+     PAGE 2 — Technology & Brain
+═══════════════════════════════════════ -->
+<div class="page" id="page-2">
+
+  <div class="hero">
+    <div class="hero-label">Worksheet 02 of 02</div>
+    <h1>Technology<br>& the Brain</h1>
+    <div class="hero-sub">Reading Process Worksheet — Digital Portfolio</div>
+    <div class="hero-meta">
+      <span class="meta-chip">Pre-Reading</span>
+      <span class="meta-chip">Reading</span>
+      <span class="meta-chip">Post-Reading</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- I. PRE-READING -->
+    <div class="section-block">
+      <div class="section-label">
+        <span class="section-num">I</span>
+        <span class="section-title">Pre-Reading</span>
+        <div class="section-line"></div>
+        <span class="section-num">10 pts</span>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">A. Headings, Subheadings & Visuals</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr>
+              <th>Headings</th>
+              <th>Subheadings</th>
+              <th>Title / Description of Visuals</th>
+            </tr>
+            <tr>
+              <td>Method<br><br>Method</td>
+              <td>Technology and daily life<br><br>Studies on brain and memory<br><br>Effects of GPS and automation<br><br>Cognitive impact and reflection</td>
+              <td>Image showing people using smartphones, laptops, and smart devices<br><br>Illustration of MRI scan on London taxi drivers' brains</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">B. KWL Chart</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>K — What I Know</th><th>W — What I Wonder</th><th>L — What I Learned</th></tr>
+            <tr>
+              <td>Technology makes life more convenient, like smartphones and apps</td>
+              <td>Can relying too much on technology harm memory or brain function?</td>
+              <td>Over-dependence on devices like GPS can weaken the hippocampus</td>
+            </tr>
+            <tr>
+              <td>People depend on tech for calculations, navigation, and reminders</td>
+              <td>Which everyday skills are being lost because of technology?</td>
+              <td>Doing mental math and memorizing routes helps maintain cognitive skills</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- II. READING -->
+    <div class="section-block">
+      <div class="section-label">
+        <span class="section-num">II</span>
+        <span class="section-title">Reading</span>
+        <div class="section-line"></div>
+        <span class="section-num">30 pts</span>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">A. Details & Inferences</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Details from the Text</th><th>Plausible Inferences</th></tr>
+            <tr>
+              <td>London taxi drivers' hippocampus grows because they memorize routes, showing the brain can physically change through mental activity</td>
+              <td>Practicing memory tasks keeps the brain active, while relying on devices may weaken thinking ability</td>
+            </tr>
+            <tr>
+              <td>Using GPS reduces brain activity in areas responsible for navigation, meaning people may stop exercising those skills</td>
+              <td>Over-reliance on technology can reduce problem-solving and navigation skills, making the brain less active</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">B. Technical Terms</div>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Technical Term</th><th>Context Clue</th><th>Use in a Sentence</th></tr>
+            <tr>
+              <td>1. Hippocampus</td>
+              <td>Described as part of the brain responsible for memory and navigation</td>
+              <td>The hippocampus helps people remember places and directions.</td>
+            </tr>
+            <tr>
+              <td>2. Cognitive skills</td>
+              <td>Mentioned as thinking, memory, and mental abilities</td>
+              <td>Using technology too much can weaken our cognitive skills.</td>
+            </tr>
+            <tr>
+              <td>3. Automation</td>
+              <td>Referred to as systems doing tasks automatically instead of humans</td>
+              <td>Automation makes tasks easier but reduces the need for human effort.</td>
+            </tr>
+            <tr>
+              <td>4. Brain activity</td>
+              <td>Explained as how active or engaged the brain is when thinking</td>
+              <td>Too much reliance on gadgets can lower brain activity.</td>
+            </tr>
+            <tr>
+              <td>5. Mental health</td>
+              <td>Refers to a person's emotional and psychological well-being</td>
+              <td>Excessive use of technology can negatively affect mental health.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">C. Key Information</div>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Topic</div>
+            <div class="info-card-value">The effects of human dependence on technology on memory and cognition</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Writer's Opinion</div>
+            <div class="info-card-value">Excessive use of technology can reduce brain activity and weaken memory</div>
+          </div>
+        </div>
+        <div class="info-card" style="margin-bottom:0;">
+          <div class="info-card-label">Evidence</div>
+          <ul class="evidence-list">
+            <li>London taxi drivers' hippocampus enlarges with memorization of routes</li>
+            <li>GPS use deactivates brain areas responsible for navigation</li>
+            <li>Mental math and memory skills decline when people rely on calculators or reminders</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- III. POST-READING -->
+    <div class="section-block">
+      <div class="section-label">
+        <span class="section-num">III</span>
+        <span class="section-title">Post-Reading</span>
+        <div class="section-line"></div>
+        <span class="section-num">10 pts</span>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">A. Rhetorical Analysis</div>
+        <div class="qa-list">
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">1</span>What credentials does the author have?</div>
+            <div class="qa-answer">Terry Brown is a technology writer at IT Chronicles and writes about trends and impacts of technology.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">2</span>What possible biases might the author have?</div>
+            <div class="qa-answer">The author might emphasize negative effects of technology because he focuses on critical tech analysis.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">3</span>What is the purpose of the text?</div>
+            <div class="qa-answer">To raise awareness about how over-dependence on technology affects memory and cognition; uses examples, studies, and explanations to support the main idea.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">4</span>What specific idea challenges or surprises you?</div>
+            <div class="qa-answer">GPS and automated systems can actually deactivate parts of the brain; surprising because technology seems helpful but can make the brain less active.</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-question"><span class="qa-num">5</span>Is the style of writing suitable for the intended audience?</div>
+            <div class="qa-answer">Appropriate for general readers; conversational yet informative; not too formal or too casual.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <div class="bottom-nav">
+    <button class="nav-btn prev" onclick="goTo(1)">
+      <span class="arrow">←</span> Previous Worksheet
+    </button>
+  </div>
+
+</div><!-- /page-2 -->
+
+<script>
+  function goTo(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page-dot').forEach(d => d.classList.remove('active'));
+    document.getElementById('page-' + n).classList.add('active');
+    document.querySelectorAll('.page-dot')[n - 1].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
